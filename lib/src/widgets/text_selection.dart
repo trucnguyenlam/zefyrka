@@ -923,10 +923,9 @@ class EditorTextSelectionGestureDetectorBuilder {
   ///  * [EditorTextSelectionGestureDetector.onDragSelectionUpdate], which triggers
   ///    this callback./lib/src/material/text_field.dart
   @protected
-  void onDragSelectionUpdate(
-      DragStartDetails startDetails, DragUpdateDetails updateDetails) {
+  void onDragSelectionUpdate(DragUpdateDetails updateDetails) {
     renderEditor.selectPositionAt(
-      from: startDetails.globalPosition,
+      from: updateDetails.globalPosition,
       to: updateDetails.globalPosition,
       cause: SelectionChangedCause.drag,
     );
@@ -1066,7 +1065,7 @@ class EditorTextSelectionGestureDetector extends StatefulWidget {
   /// The frequency of calls is throttled to avoid excessive text layout
   /// operations in text fields. The throttling is controlled by the constant
   /// [_kDragSelectionUpdateThrottle].
-  final DragSelectionUpdateCallback? onDragSelectionUpdate;
+  final GestureDragUpdateCallback? onDragSelectionUpdate;
 
   /// Called when a mouse that was previously dragging is released.
   final GestureDragEndCallback? onDragSelectionEnd;
@@ -1161,7 +1160,7 @@ class _EditorTextSelectionGestureDetectorState
     assert(_lastDragStartDetails != null);
     assert(_lastDragUpdateDetails != null);
     widget.onDragSelectionUpdate
-        ?.call(_lastDragStartDetails!, _lastDragUpdateDetails!);
+        ?.call(_lastDragUpdateDetails!);
     _dragUpdateThrottleTimer = null;
     _lastDragUpdateDetails = null;
   }
@@ -1247,7 +1246,7 @@ class _EditorTextSelectionGestureDetectorState
       gestures[LongPressGestureRecognizer] =
           GestureRecognizerFactoryWithHandlers<LongPressGestureRecognizer>(
         () => LongPressGestureRecognizer(
-            debugOwner: this, kind: PointerDeviceKind.touch),
+            debugOwner: this, supportedDevices: <PointerDeviceKind>{PointerDeviceKind.touch}),
         (LongPressGestureRecognizer instance) {
           instance
             ..onLongPressStart = _handleLongPressStart
@@ -1265,7 +1264,7 @@ class _EditorTextSelectionGestureDetectorState
       gestures[HorizontalDragGestureRecognizer] =
           GestureRecognizerFactoryWithHandlers<HorizontalDragGestureRecognizer>(
         () => HorizontalDragGestureRecognizer(
-            debugOwner: this, kind: PointerDeviceKind.mouse),
+            debugOwner: this, supportedDevices: <PointerDeviceKind>{PointerDeviceKind.mouse}),
         (HorizontalDragGestureRecognizer instance) {
           instance
             // Text selection should start from the position of the first pointer
