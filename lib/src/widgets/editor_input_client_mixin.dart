@@ -102,6 +102,7 @@ mixin RawEditorStateTextInputClientMixin on EditorState
     // race conditions.
     final actualValue = value.copyWith(
       composing: _lastKnownRemoteTextEditingValue!.composing,
+      text: _lastKnownRemoteTextEditingValue?.text ?? value.text,
     );
 
     if (actualValue == _lastKnownRemoteTextEditingValue) return;
